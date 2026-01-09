@@ -5,7 +5,6 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-
         double lastResult = 0;
         boolean hasLastResult = false;
         System.out.println("===나는 계산기야===");
