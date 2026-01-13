@@ -49,23 +49,26 @@ public class Calculator {
         while (isRunning) {
             System.out.println("메뉴를 고르세요. ( c: 계산기, h: 히스토리, exit: 종료 )");
             CalculatorMenu menu = CalculatorMenu.fromString(scanner.next());
-            if (menu != null) {
-                switch (menu) {
-                    case CALCULATOR -> {
-                        calculatorMenu(scanner);
-                        break;
-                    }
-                    case HISTORY -> {
-                        historyMenu(scanner);
-                        break;
-                    }
-                    case EXIT -> {
-                        System.out.println("계산기 프로그램을 종료합니다.");
-                        isRunning = false;
-                        break;
-                    }
-                    default -> System.out.println("잘못된 입력입니다. 다시 선택해주세요.");
+            if (menu == null) {
+                System.out.println("잘못된 입력입니다. 다시 골라주세요.");
+                continue;
+            }
+
+            switch (menu) {
+                case CALCULATOR -> {
+                    calculatorMenu(scanner);
+                    break;
                 }
+                case HISTORY -> {
+                    historyMenu(scanner);
+                    break;
+                }
+                case EXIT -> {
+                    System.out.println("계산기 프로그램을 종료합니다.");
+                    isRunning = false;
+                    break;
+                }
+                default -> System.out.println("잘못된 입력입니다. 다시 선택해주세요.");
             }
         }
     }
@@ -81,13 +84,10 @@ public class Calculator {
         while (isRunning) {
             double num1 = hasLastResult ? lastResult : 0;
             if (!hasLastResult) {
-                System.out.print("첫 번째 숫자를 입력하세요: ");
-                num1 = scanner.nextDouble();
+                num1 = getSafeDouble(scanner, "첫 번째 숫자를 입력하세요: ");
             }
-            System.out.print("사칙연산 기호를 입력하세요: ");
-            Operator operator = Operator.fromString(scanner.next().charAt(0));
-            System.out.print("두 번째 숫자를 입력하세요: ");
-            double num2 = scanner.nextDouble();
+            Operator operator = getSafeOperator(scanner);
+            double num2 = getSafeDouble(scanner, "두 번째 숫자를 입력하세요: ");
 
             lastResult = calculate(num1, num2, operator);
 
@@ -97,37 +97,39 @@ public class Calculator {
 
             System.out.println("더 계산하시겠습니까? ( co: 계속하기, r: 리셋, h: 히스토리, p: 메뉴로 이동 )");
             CalculatorMenu menu = CalculatorMenu.fromString(scanner.next());
-            if (menu != null) {
-                switch (menu) {
-                    case CONTINUE: {
-                        hasLastResult = true;
-                        break;
-                    }
-
-                    case RESET: {
-                        hasLastResult = false;
-                        lastResult = 0;
-                        System.out.println("값을 초기화했습니다.");
-                        break;
-                    }
-
-                    case HISTORY: {
-                        hasLastResult = true;
-                        historyMenu(scanner);
-                        break;
-                    }
-
-                    case PREVIOUS: {
-                        System.out.println("최종 결과값은: " + lastResult + " 입니다.");
-                        isRunning = false;
-                        break;
-                    }
-                    default: {
-                        System.out.println("잘못된 입력입니다. 다시 선택해주세요.");
-                        break;
-                    }
-
+            if (menu == null) {
+                System.out.println("잘못된 입력입니다. 다시 골라주세요.");
+                continue;
+            }
+            switch (menu) {
+                case CONTINUE: {
+                    hasLastResult = true;
+                    break;
                 }
+
+                case RESET: {
+                    hasLastResult = false;
+                    lastResult = 0;
+                    System.out.println("값을 초기화했습니다.");
+                    break;
+                }
+
+                case HISTORY: {
+                    hasLastResult = true;
+                    historyMenu(scanner);
+                    break;
+                }
+
+                case PREVIOUS: {
+                    System.out.println("최종 결과값은: " + lastResult + " 입니다.");
+                    isRunning = false;
+                    break;
+                }
+                default: {
+                    System.out.println("잘못된 입력입니다. 다시 선택해주세요.");
+                    break;
+                }
+
             }
         }
     }
@@ -143,11 +145,11 @@ public class Calculator {
         System.out.println("\n--- 계산 기록 ---");
         boolean isRunning = true;
 
-        // 이때 내부 history값을 이용해야할지? 외부에 전달하는 history 메서드중 어떤걸 이용할지 고민이됩니다.
-        // 단방향 데이터 흐름을 지키고 싶어서 고민을 했습니다.
-        List<String> currentHistory = getHistory();
 
         while (isRunning) {
+            // 이때 내부 history값을 이용해야할지? 외부에 전달하는 history 메서드중 어떤걸 이용할지 고민이됩니다.
+            // 단방향 데이터 흐름을 지키고 싶어서 고민을 했습니다.
+            List<String> currentHistory = getHistory();
             if (currentHistory.isEmpty()) {
                 System.out.println("기록이 없습니다.");
                 return;
@@ -157,8 +159,13 @@ public class Calculator {
                 }
             }
 
-            System.out.println("\n1. 오래된 기록 삭제, 2. 뒤로 가기");
+            System.out.println("\ndelete. 오래된 기록 삭제, p. 뒤로 가기");
             CalculatorMenu menu = CalculatorMenu.fromString(scanner.next());
+            if (menu == null) {
+                System.out.println("잘못된 입력입니다. (delete 혹은 p를 입력해주세요)");
+                continue;
+            }
+
             switch (menu) {
                 case DELETE_OLDEST:
                     removeOldestHistory();
@@ -173,6 +180,32 @@ public class Calculator {
             }
         }
 
+    }
+
+
+    private double getSafeDouble(Scanner scanner, String message) {
+        while (true) {
+            System.out.print(message);
+            try {
+                return scanner.nextDouble();
+            } catch (java.util.InputMismatchException e) {
+                System.out.println("[오류] 숫자만 입력 가능합니다.");
+                scanner.next();
+            }
+        }
+    }
+
+
+    private Operator getSafeOperator(Scanner scanner) {
+        while (true) {
+            System.out.print("사칙연산 기호를 입력하세요 (+, -, *, /, %, ^, q): ");
+            String input = scanner.next();
+            Operator op = Operator.fromString(input.charAt(0));
+            if (op != null) {
+                return op;
+            }
+            System.out.println("[오류] 지원하지 않는 연산자입니다.");
+        }
     }
 
 
