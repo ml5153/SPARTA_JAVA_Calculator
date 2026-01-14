@@ -3,10 +3,7 @@ package com.sparta;
 import com.sparta.data.CalculatorMenu;
 import com.sparta.data.Operator;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Calculator {
 
@@ -188,7 +185,7 @@ public class Calculator {
             System.out.print(message);
             try {
                 return scanner.nextDouble();
-            } catch (java.util.InputMismatchException e) {
+            } catch (InputMismatchException e) {
                 System.out.println("[오류] 숫자만 입력 가능합니다.");
                 scanner.next();
             }
