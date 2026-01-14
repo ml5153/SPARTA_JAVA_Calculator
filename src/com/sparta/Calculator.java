@@ -154,12 +154,12 @@ public class Calculator {
                 System.out.println("기록이 없습니다.");
                 return;
             } else {
-                for (String history : currentHistory) {
-                    System.out.print(history);
+                for (int i = 0; i < currentHistory.size(); i++) {
+                    System.out.printf("[%d] %s%n", (i + 1), currentHistory.get(i));
                 }
             }
 
-            System.out.println("\ndelete. 오래된 기록 삭제, p. 뒤로 가기");
+            System.out.println("\n( delete: 오래된 기록 삭제, p: 뒤로 가기 )");
             CalculatorMenu menu = CalculatorMenu.fromString(scanner.next());
             if (menu == null) {
                 System.out.println("잘못된 입력입니다. (delete 혹은 p를 입력해주세요)");
@@ -201,8 +201,8 @@ public class Calculator {
             System.out.print("사칙연산 기호를 입력하세요 (+, -, *, /, %, ^, q): ");
             String input = scanner.next();
 //            Operator op = Operator.fromString(input.charAt(0));
-//            Operator op = Operator.fromString(input.charAt(0)).orElse(Operator.PLUS); // 기본값 설정 가능
-            Operator op = Operator.fromString(input.charAt(0)).orElseThrow(() -> new IllegalArgumentException("잘못된 연산자!"));
+            Operator op = Operator.fromString(input.charAt(0)).orElse(null); // 기본값 설정 가능
+//            Operator op = Operator.fromString(input.charAt(0)).orElseThrow(() -> new IllegalArgumentException("잘못된 연산자!"));
 
             if (op != null) {
                 return op;
