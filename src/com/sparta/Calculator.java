@@ -200,7 +200,10 @@ public class Calculator {
         while (true) {
             System.out.print("사칙연산 기호를 입력하세요 (+, -, *, /, %, ^, q): ");
             String input = scanner.next();
-            Operator op = Operator.fromString(input.charAt(0));
+//            Operator op = Operator.fromString(input.charAt(0));
+//            Operator op = Operator.fromString(input.charAt(0)).orElse(Operator.PLUS); // 기본값 설정 가능
+            Operator op = Operator.fromString(input.charAt(0)).orElseThrow(() -> new IllegalArgumentException("잘못된 연산자!"));
+
             if (op != null) {
                 return op;
             }
