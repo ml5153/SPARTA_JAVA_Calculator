@@ -220,45 +220,31 @@ public class Calculator {
         }
 
         double result = 0;
+        // Switch 문도 람다가 있었다^^ (kotlin의 when 문과 비슷해서 편하다.)
         switch (operator) {
-            case PLUS:
-                result = num1 + num2;
-                break;
-
-            case MINUS:
-                result = num1 - num2;
-                break;
-
-            case MULTIPLY:
-                result = num1 * num2;
-                break;
-
-            case DIVIDE:
+            case PLUS -> result = num1 + num2;
+            case MINUS -> result = num1 - num2;
+            case MULTIPLY -> result = num1 * num2;
+            case DIVIDE -> {
                 if (num2 == 0) {
                     throw new ArithmeticException("분모 0으로 나눌수 없습니다.");
                 } else {
                     result = num1 / num2;
                 }
+            }
+            case MOD -> result = num1 % num2;
+            case POW -> result = Math.pow(num1, num2);
+            case SQRT -> result = Math.sqrt(num1);
 
-                break;
-
-            case MOD:
-                result = num1 % num2;
-                break;
-
-            case POW:
-                result = Math.pow(num1, num2);
-                break;
-
-            case SQRT:
-                result = Math.sqrt(num1);
-                break;
         }
 
-        // history
-        String record = num1 + " " + operator + " " + num2 + " = " + result;
+        // history (String.format 으로 성능을 향상 시켰다)
+        String record = String.format("%s %s %s = %f", num1, operator, num2, result);
         history.add(record);
 
         return result;
     }
 }
+
+
+
